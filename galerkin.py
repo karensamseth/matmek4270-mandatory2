@@ -34,7 +34,7 @@ class FunctionSpace:
         return self._domain
 
     @property
-    def reference_domain(self):
+    def reference_domain(self): #Karen
         raise RuntimeError
 
     @property
@@ -51,10 +51,10 @@ class FunctionSpace:
     def weight(self, x=x):
         return 1
 
-    def basis_function(self, j, sympy=False):
+    def basis_function(self, j, sympy=False): #Karen
         raise RuntimeError
 
-    def derivative_basis_function(self, j, k=1):
+    def derivative_basis_function(self, j, k=1): #Karen
         raise RuntimeError
 
     def evaluate_basis_function(self, Xj, j):
@@ -75,7 +75,7 @@ class FunctionSpace:
             P[:, j] = self.evaluate_basis_function(Xj, j)
         return P
 
-    def eval_derivative_basis_function_all(self, Xj, k=1):
+    def eval_derivative_basis_function_all(self, Xj, k=1): #Karen
         raise NotImplementedError
 
     def inner_product(self, u):
@@ -108,10 +108,10 @@ class Legendre(FunctionSpace):
     def derivative_basis_function(self, j, k=1):
         return self.basis_function(j).deriv(k)
 
-    def L2_norm_sq(self, N):
+    def L2_norm_sq(self, N): #Karen
         raise NotImplementedError
 
-    def mass_matrix(self):
+    def mass_matrix(self): #Karen
         raise NotImplementedError
 
     def eval(self, uh, xj):
@@ -136,10 +136,10 @@ class Chebyshev(FunctionSpace):
     def weight(self, x=x):
         return 1/sp.sqrt(1-x**2)
 
-    def L2_norm_sq(self, N):
+    def L2_norm_sq(self, N): #Karen
         raise NotImplementedError
 
-    def mass_matrix(self):
+    def mass_matrix(self): #Karen
         raise NotImplementedError
 
     def eval(self, uh, xj):
@@ -204,16 +204,16 @@ class Sines(Trigonometric):
 
 class Cosines(Trigonometric):
 
-    def __init__(self, N, domain=(0, 1), bc=(0, 0)):
+    def __init__(self, N, domain=(0, 1), bc=(0, 0)): #Karen
         raise NotImplementedError
 
-    def basis_function(self, j, sympy=False):
+    def basis_function(self, j, sympy=False): #Karen
         raise NotImplementedError
 
-    def derivative_basis_function(self, j, k=1):
+    def derivative_basis_function(self, j, k=1): #Karen
         raise NotImplementedError
 
-    def L2_norm_sq(self, N):
+    def L2_norm_sq(self, N): #Karen
         raise NotImplementedError
 
 # Create classes to hold the boundary function
@@ -288,15 +288,15 @@ class DirichletLegendre(Composite, Legendre):
         self.B = Dirichlet(bc, domain, self.reference_domain)
         self.S = sparse.diags((1, -1), (0, 2), shape=(N+1, N+3), format='csr')
 
-    def basis_function(self, j, sympy=False):
+    def basis_function(self, j, sympy=False): #Karen
         raise NotImplementedError
 
 
 class NeumannLegendre(Composite, Legendre):
-    def __init__(self, N, domain=(-1, 1), bc=(0, 0), constraint=0):
+    def __init__(self, N, domain=(-1, 1), bc=(0, 0), constraint=0): #Karen
         raise NotImplementedError
 
-    def basis_function(self, j, sympy=False):
+    def basis_function(self, j, sympy=False): #Karen
         raise NotImplementedError
 
 
@@ -314,10 +314,10 @@ class DirichletChebyshev(Composite, Chebyshev):
 
 
 class NeumannChebyshev(Composite, Chebyshev):
-    def __init__(self, N, domain=(-1, 1), bc=(0, 0), constraint=0):
+    def __init__(self, N, domain=(-1, 1), bc=(0, 0), constraint=0): #Karen
         raise NotImplementedError
 
-    def basis_function(self, j, sympy=False):
+    def basis_function(self, j, sympy=False): #Karen
         raise NotImplementedError
 
 
