@@ -112,7 +112,11 @@ class Legendre(FunctionSpace):
         return self.basis_function(j).deriv(k)
 
     def L2_norm_sq(self, N): #Karen
-        raise NotImplementedError
+        L2matrix = np.zeros(N, N)
+        for j in range(N):
+            L2matrix[j,j] = 2/(2*j+1)
+        return L2matrix
+            
 
     def mass_matrix(self): #Karen
         raise NotImplementedError
@@ -140,7 +144,14 @@ class Chebyshev(FunctionSpace):
         return 1/sp.sqrt(1-x**2)
 
     def L2_norm_sq(self, N): #Karen
-        raise NotImplementedError
+        L2matrix = np.zeros(N, N)
+        for j in range(N):
+            if j == 0:
+                c = 2
+            elif j>0:
+                c = 1
+            L2matrix[j,j] = c*np.pi/2
+        return L2matrix #Riktignok vektet indreprodukt
 
     def mass_matrix(self): #Karen
         raise NotImplementedError
@@ -408,7 +419,7 @@ def L2_error(uh, ue, V, kind='norm'):
     if kind == 'norm':
         return np.sqrt(quad(uv, float(d[0]), float(d[1]))[0])
     elif kind == 'inf':
-        return max(abs(uj-uej))
+        return max(abs(uh-uej)) #endret fra uj til uh
 
 
 def test_project():
