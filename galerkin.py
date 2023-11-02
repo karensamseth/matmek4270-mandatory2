@@ -34,8 +34,8 @@ class FunctionSpace:
         return self._domain
 
     @property
-    def reference_domain(self): #Karen?
-        raise RuntimeError
+    def reference_domain(self): #Karen? (Egt en runtimeerror)
+        return (-1,1)
 
     @property
     def domain_factor(self):
@@ -119,12 +119,11 @@ class Legendre(FunctionSpace):
             
 
     def mass_matrix(self): #Karen
-        A = np.zeros(self.N+1, self.N+1)
+        A = np.zeros((self.N+1, self.N+1))
         for i in range(self.N+1):
             for j in range(self.N+1):
                 u = self.basis_function(i)
-                v = self.basis_function(j)
-                A[i,j] = inner(u,v)
+                A[i,j] = self.inner_product(u)
         return A
 
     def eval(self, uh, xj):
@@ -160,12 +159,11 @@ class Chebyshev(FunctionSpace):
         return L2matrix #Riktignok vektet indreprodukt
 
     def mass_matrix(self): #Karen
-        A = np.zeros(self.N+1, self.N+1)
+        A = np.zeros((self.N+1, self.N+1))
         for i in range(self.N+1):
             for j in range(self.N+1):
                 u = self.basis_function(i)
-                v = self.basis_function(j)
-                A[i,j] = inner(u,v)
+                A[i,j] = self.inner_product(u)
         return A
 
     def eval(self, uh, xj):
@@ -490,5 +488,5 @@ def test_convection_diffusion():
 
 if __name__ == '__main__':
     test_project()
-    test_convection_diffusion()
-    test_helmholtz()
+    #test_convection_diffusion()
+    #test_helmholtz()
