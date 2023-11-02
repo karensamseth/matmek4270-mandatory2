@@ -119,7 +119,13 @@ class Legendre(FunctionSpace):
             
 
     def mass_matrix(self): #Karen
-        raise NotImplementedError
+        A = np.zeros(self.N+1, self.N+1)
+        for i in range(self.N+1):
+            for j in range(self.N+1):
+                u = self.basis_function(i)
+                v = self.basis_function(j)
+                A[i,j] = inner(u,v)
+        return A
 
     def eval(self, uh, xj):
         xj = np.atleast_1d(xj)
@@ -154,7 +160,13 @@ class Chebyshev(FunctionSpace):
         return L2matrix #Riktignok vektet indreprodukt
 
     def mass_matrix(self): #Karen
-        raise NotImplementedError
+        A = np.zeros(self.N+1, self.N+1)
+        for i in range(self.N+1):
+            for j in range(self.N+1):
+                u = self.basis_function(i)
+                v = self.basis_function(j)
+                A[i,j] = inner(u,v)
+        return A
 
     def eval(self, uh, xj):
         xj = np.atleast_1d(xj)
