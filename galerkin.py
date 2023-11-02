@@ -34,7 +34,7 @@ class FunctionSpace:
         return self._domain
 
     @property
-    def reference_domain(self): #Karen
+    def reference_domain(self): #Karen?
         raise RuntimeError
 
     @property
@@ -51,10 +51,10 @@ class FunctionSpace:
     def weight(self, x=x):
         return 1
 
-    def basis_function(self, j, sympy=False): #Karen
+    def basis_function(self, j, sympy=False): #Karen?
         raise RuntimeError
-
-    def derivative_basis_function(self, j, k=1): #Karen
+        
+    def derivative_basis_function(self, j, k=1): #Karen?
         raise RuntimeError
 
     def evaluate_basis_function(self, Xj, j):
