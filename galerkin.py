@@ -112,18 +112,20 @@ class Legendre(FunctionSpace):
         return self.basis_function(j).deriv(k)
 
     def L2_norm_sq(self, N): #Karen
-        L2matrix = np.zeros(N, N)
-        for j in range(N):
-            L2matrix[j,j] = 2/(2*j+1)
-        return L2matrix
+        L2vektor = np.zeros(N+1)
+        for j in range(N+1):
+            L2vektor[j] = 2/(2*j+1)
+        return L2vektor
             
 
     def mass_matrix(self): #Karen
-        A = np.zeros((self.N+1, self.N+1))
-        for i in range(self.N+1):
-            for j in range(self.N+1):
-                u = self.basis_function(i)
-                A[i,j] = self.inner_product(u)
+        #A = np.zeros((self.N+1, self.N+1))
+        #for i in range(self.N+1):
+        #    for j in range(self.N+1):
+        #        u = self.basis_function(i)
+        #        A[i,j] = self.inner_product(u)
+        L2vektor = self.L2_norm_sq(self.N)
+        A = sparse.diags(L2vektor, 0, (self.N+1, self.N+1), 'lil')
         return A
 
     def eval(self, uh, xj):
@@ -149,21 +151,23 @@ class Chebyshev(FunctionSpace):
         return 1/sp.sqrt(1-x**2)
 
     def L2_norm_sq(self, N): #Karen
-        L2matrix = np.zeros(N, N)
-        for j in range(N):
+        L2vektor = np.zeros(N+1)
+        for j in range(N+1):
             if j == 0:
                 c = 2
             elif j>0:
                 c = 1
-            L2matrix[j,j] = c*np.pi/2
-        return L2matrix #Riktignok vektet indreprodukt
+            L2vektor[j] = c*np.pi/2
+        return L2vektor #Riktignok vektet indreprodukt
 
     def mass_matrix(self): #Karen
-        A = np.zeros((self.N+1, self.N+1))
-        for i in range(self.N+1):
-            for j in range(self.N+1):
-                u = self.basis_function(i)
-                A[i,j] = self.inner_product(u)
+        #A = np.zeros((self.N+1, self.N+1))
+        #for i in range(self.N+1):
+        #    for j in range(self.N+1):
+        #        u = self.basis_function(i)
+        #        A[i,j] = self.inner_product(u)
+        L2vektor = self.L2_norm_sq(self.N)
+        A = sparse.diags(L2vektor, 0, (self.N+1, self.N+1), 'lil')
         return A
 
     def eval(self, uh, xj):
