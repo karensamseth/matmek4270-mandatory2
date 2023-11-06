@@ -328,10 +328,10 @@ class NeumannLegendre(Composite, Legendre):
         self.B = Neumann(bc, domain, self.reference_domain)
         self.S = sparse.diags((1, -1), (0, 2), shape=(N+1, N+3), format='csr')
 
-    def basis_function(self, j, sympy=False): #Karen
+    def basis_function(self, j, sympy=False): #Karen, se lect.11 s.13
         if sympy:
-            return sp.cos(j*sp.acos(x)) - sp.cos((j+2)*sp.acos(x))
-        return Leg.basis(j)-Leg.basis(j+2)
+            return sp.cos(sp.pi*j*(x+1)/2) 
+        return Leg.basis(j)-(j*(j+1))/((j+2)(j+3))*Leg.basis(j+2)
 
 
 class DirichletChebyshev(Composite, Chebyshev):
@@ -502,5 +502,5 @@ def test_convection_diffusion():
 
 if __name__ == '__main__':
     #test_project()
-    test_convection_diffusion()
-    #test_helmholtz()
+    #test_convection_diffusion()
+    test_helmholtz()
