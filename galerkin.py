@@ -51,10 +51,10 @@ class FunctionSpace:
     def weight(self, x=x):
         return 1
 
-    def basis_function(self, j, sympy=False): #Karen?
+    def basis_function(self, j, sympy=False):
         raise RuntimeError
         
-    def derivative_basis_function(self, j, k=1): #Karen?
+    def derivative_basis_function(self, j, k=1): 
         raise RuntimeError
 
     def evaluate_basis_function(self, Xj, j):
@@ -326,7 +326,10 @@ class NeumannLegendre(Composite, Legendre):
     def __init__(self, N, domain=(-1, 1), bc=(0, 0), constraint=0): #Karen
         Legendre.__init__(self, N, domain=domain)
         self.B = Neumann(bc, domain, self.reference_domain)
-        self.S = sparse.diags((1, -1), (0, 2), shape=(N+1, N+3), format='csr')
+        alpha = np.zeros(N+1)
+        for i in range(N+1):
+            alpha[i] = (i*(i+1))/((i+2)(i+3))
+        self.S = sparse.diags((1, -alpha), (0, 2), shape=(N+1, N+3), format='csr')
 
     def basis_function(self, j, sympy=False): #Karen, se lect.11 s.13
         if sympy:
@@ -351,12 +354,15 @@ class NeumannChebyshev(Composite, Chebyshev):
     def __init__(self, N, domain=(-1, 1), bc=(0, 0), constraint=0): #Karen
         Chebyshev.__init__(self, N, domain=domain)
         self.B = Neumann(bc, domain, self.reference_domain)
-        self.S = sparse.diags((1, -1), (0, 2), shape=(N+1, N+3), format='csr')
+        alpha = np.zeros(N+1)
+        for i in range(N+1):
+            alpha[i] =  i**2/(i+2)**2
+        self.S = sparse.diags((1, -alpha), (0, 2), shape=(N+1, N+3), format='csr')
 
     def basis_function(self, j, sympy=False): #Karen
         if sympy:
             return sp.cos(j*sp.acos(x)) - sp.cos((j+2)*sp.acos(x))
-        return Cheb.basis(j)-Cheb.basis(j+2)
+        return Cheb.basis(j)-j**2/(j+2)**2*Cheb.basis(j+2) 
 
 
 class BasisFunction:
