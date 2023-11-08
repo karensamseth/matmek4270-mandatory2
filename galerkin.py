@@ -513,7 +513,7 @@ if __name__ == '__main__':
     ue = sp.besselj(0, x)
     f = ue.diff(x, 2)+ue
     domain = (0, 10)
-    space = DirichletChebyshev
+    space = Sines
     #for space in (NeumannChebyshev, NeumannLegendre, DirichletChebyshev, DirichletLegendre, Sines, Cosines):
     if space in (NeumannChebyshev, NeumannLegendre, Cosines):
         bc = ue.diff(x, 1).subs(x, domain[0]), ue.diff(
