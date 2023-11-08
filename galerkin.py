@@ -374,7 +374,7 @@ class NeumannChebyshev(Composite, Chebyshev):
 
     def basis_function(self, j, sympy=False): #Karen
         if sympy:
-            return sp.cos(j*sp.acos(x)) - sp.cos((j+2)*sp.acos(x))
+            return sp.cos(j*sp.acos(x)) - j**2/(j+2)**2*sp.cos((j+2)*sp.acos(x))
         return Cheb.basis(j)-j**2/(j+2)**2*Cheb.basis(j+2) 
 
 
