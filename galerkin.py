@@ -233,16 +233,29 @@ class Sines(Trigonometric):
 class Cosines(Trigonometric):
 
     def __init__(self, N, domain=(0, 1), bc=(0, 0)): #Karen
-        raise NotImplementedError
+        Trigonometric.__init__(self, N, domain=domain)
+        self.B = Neumann(bc, domain, self.reference_domain)
 
     def basis_function(self, j, sympy=False): #Karen
-        raise NotImplementedError
+        if sympy:
+            return sp.cos((j+1)*sp.pi*x)
+        return lambda Xj: np.cos((j+1)*np.pi*Xj)
 
     def derivative_basis_function(self, j, k=1): #Karen
-        raise NotImplementedError
+        scale = ((j+1)*np.pi)**k * {0: 1, 1: -1}[((k+1)//2) % 2]
+        if k % 2 == 0:
+            return lambda Xj: scale*np.cos((j+1)*np.pi*Xj)
+        else:
+            return lambda Xj: scale*np.sin((j+1)*np.pi*Xj)
 
     def L2_norm_sq(self, N): #Karen
-        raise NotImplementedError
+        l = np.zeros(N+1)
+        for i in range(N+1):
+            if i == 0:
+                l[i] = 1
+            else:
+                l[i] = 0.5
+        return l
 
 # Create classes to hold the boundary function
 
@@ -513,7 +526,7 @@ if __name__ == '__main__':
     ue = sp.besselj(0, x)
     f = ue.diff(x, 2)+ue
     domain = (0, 10)
-    space = Sines
+    space = Cosines
     #for space in (NeumannChebyshev, NeumannLegendre, DirichletChebyshev, DirichletLegendre, Sines, Cosines):
     if space in (NeumannChebyshev, NeumannLegendre, Cosines):
         bc = ue.diff(x, 1).subs(x, domain[0]), ue.diff(
