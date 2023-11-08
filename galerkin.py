@@ -242,7 +242,7 @@ class Cosines(Trigonometric):
         return lambda Xj: np.cos((j+1)*np.pi*Xj)
 
     def derivative_basis_function(self, j, k=1): #Karen
-        scale = ((j+1)*np.pi)**k * {0: 1, 1: -1}[((k+1)//2) % 2]
+        scale = ((j+1)*np.pi)**k * {0: -1, 1: 1}[((k+1)//2) % 2]
         if k % 2 == 0:
             return lambda Xj: scale*np.cos((j+1)*np.pi*Xj)
         else:
