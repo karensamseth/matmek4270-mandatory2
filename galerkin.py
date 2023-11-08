@@ -328,13 +328,13 @@ class NeumannLegendre(Composite, Legendre):
         self.B = Neumann(bc, domain, self.reference_domain)
         alpha = np.zeros(N+1)
         for i in range(N+1):
-            alpha[i] = (i*(i+1))/((i+2)(i+3))
+            alpha[i] = (i*(i+1))/((i+2)*(i+3))
         self.S = sparse.diags((1, -alpha), (0, 2), shape=(N+1, N+3), format='csr')
 
     def basis_function(self, j, sympy=False): #Karen, se lect.11 s.13
         if sympy:
             return sp.cos(sp.pi*j*(x+1)/2) 
-        return Leg.basis(j)-(j*(j+1))/((j+2)(j+3))*Leg.basis(j+2)
+        return Leg.basis(j)-(j*(j+1))/((j+2)*(j+3))*Leg.basis(j+2)
 
 
 class DirichletChebyshev(Composite, Chebyshev):
@@ -356,7 +356,7 @@ class NeumannChebyshev(Composite, Chebyshev):
         self.B = Neumann(bc, domain, self.reference_domain)
         alpha = np.zeros(N+1)
         for i in range(N+1):
-            alpha[i] =  i**2/(i+2)**2
+            alpha[i] =  i**2/(i+2)**2 #se Shenfun
         self.S = sparse.diags((1, -alpha), (0, 2), shape=(N+1, N+3), format='csr')
 
     def basis_function(self, j, sympy=False): #Karen
@@ -449,7 +449,7 @@ def L2_error(uh, ue, V, kind='norm'):
     if kind == 'norm':
         return np.sqrt(quad(uv, float(d[0]), float(d[1]))[0])
     elif kind == 'inf':
-        return max(abs(uh-uej)) #endret fra uj til uh
+        return max(abs(uh-uej)) #endret fra uj til ue
 
 
 def test_project():
@@ -509,4 +509,25 @@ def test_convection_diffusion():
 if __name__ == '__main__':
     #test_project()
     #test_convection_diffusion()
-    test_helmholtz()
+    #test_helmholtz()
+    ue = sp.besselj(0, x)
+    f = ue.diff(x, 2)+ue
+    domain = (0, 10)
+    space = NeumannLegendre
+    #for space in (NeumannChebyshev, NeumannLegendre, DirichletChebyshev, DirichletLegendre, Sines, Cosines):
+    if space in (NeumannChebyshev, NeumannLegendre, Cosines):
+        bc = ue.diff(x, 1).subs(x, domain[0]), ue.diff(
+            x, 1).subs(x, domain[1])
+    else:
+        bc = ue.subs(x, domain[0]), ue.subs(x, domain[1])
+    N = 60 if space in (Sines, Cosines) else 12
+    V = space(N, domain=domain, bc=bc)
+    u = TrialFunction(V)
+    v = TestFunction(V)
+    A = inner(u.diff(2), v) + inner(u, v)
+    b = inner(f-(V.B.x.diff(x, 2)+V.B.x), v)
+    u_tilde = np.linalg.solve(A, b)
+    err = L2_error(u_tilde, ue, V)
+    print(
+        f'test_helmholtz: L2 error = {err:2.4e}, N = {N}, {V.__class__.__name__}')
+    
