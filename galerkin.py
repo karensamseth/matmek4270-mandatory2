@@ -119,11 +119,6 @@ class Legendre(FunctionSpace):
             
 
     def mass_matrix(self): #Karen
-        #A = np.zeros((self.N+1, self.N+1))
-        #for i in range(self.N+1):
-        #    for j in range(self.N+1):
-        #        u = self.basis_function(i)
-        #        A[i,j] = self.inner_product(u)
         L2vektor = self.L2_norm_sq(self.N)
         A = sparse.diags(L2vektor, 0, (self.N+1, self.N+1), 'csr')
         return A
@@ -151,21 +146,12 @@ class Chebyshev(FunctionSpace):
         return 1/sp.sqrt(1-x**2)
 
     def L2_norm_sq(self, N): #Karen
-        L2vektor = np.zeros(N+1)
-        for j in range(N+1):
-            if j == 0:
-                c = 2
-            elif j>0:
-                c = 1
-            L2vektor[j] = c*np.pi/2
+        c = np.ones(N+1)
+        c[0] = 2
+        L2vektor = c*np.pi/2
         return L2vektor #Riktignok vektet indreprodukt
 
     def mass_matrix(self): #Karen
-        #A = np.zeros((self.N+1, self.N+1))
-        #for i in range(self.N+1):
-        #    for j in range(self.N+1):
-        #        u = self.basis_function(i)
-        #        A[i,j] = self.inner_product(u)
         L2vektor = self.L2_norm_sq(self.N)
         A = sparse.diags(L2vektor, 0, (self.N+1, self.N+1), 'csr')
         return A
@@ -238,23 +224,19 @@ class Cosines(Trigonometric):
 
     def basis_function(self, j, sympy=False): #Karen
         if sympy:
-            return sp.cos((j+1)*sp.pi*x)
-        return lambda Xj: np.cos((j+1)*np.pi*Xj)
+            return sp.cos(j*sp.pi*x)
+        return lambda Xj: np.cos(j*np.pi*Xj)
 
     def derivative_basis_function(self, j, k=1): #Karen
-        scale = ((j+1)*np.pi)**k * {0: -1, 1: 1}[((k+1)//2) % 2]
+        scale = (j*np.pi)**k * {0: -1, 1: 1}[((k+1)//2) % 2]
         if k % 2 == 0:
-            return lambda Xj: scale*np.cos((j+1)*np.pi*Xj)
+            return lambda Xj: scale*np.cos(j*np.pi*Xj)
         else:
-            return lambda Xj: scale*np.sin((j+1)*np.pi*Xj)
+            return lambda Xj: scale*np.sin(j*np.pi*Xj)
 
     def L2_norm_sq(self, N): #Karen
-        l = np.zeros(N+1)
-        for i in range(N+1):
-            if i == 0:
-                l[i] = 1
-            else:
-                l[i] = 0.5
+        l = np.ones(N+1)
+        l[1:] = 0.5
         return l
 
 # Create classes to hold the boundary function
@@ -462,7 +444,7 @@ def L2_error(uh, ue, V, kind='norm'):
     if kind == 'norm':
         return np.sqrt(quad(uv, float(d[0]), float(d[1]))[0])
     elif kind == 'inf':
-        return max(abs(uh-uej)) #endret fra uj til ue
+        return max(abs(uh-uej)) #endret fra uj til uh
 
 
 def test_project():
@@ -520,27 +502,8 @@ def test_convection_diffusion():
 
 
 if __name__ == '__main__':
-    #test_project()
-    #test_convection_diffusion()
-    #test_helmholtz()
-    ue = sp.besselj(0, x)
-    f = ue.diff(x, 2)+ue
-    domain = (0, 10)
-    space = Cosines
-    #for space in (NeumannChebyshev, NeumannLegendre, DirichletChebyshev, DirichletLegendre, Sines, Cosines):
-    if space in (NeumannChebyshev, NeumannLegendre, Cosines):
-        bc = ue.diff(x, 1).subs(x, domain[0]), ue.diff(
-            x, 1).subs(x, domain[1])
-    else:
-        bc = ue.subs(x, domain[0]), ue.subs(x, domain[1])
-    N = 60 if space in (Sines, Cosines) else 12
-    V = space(N, domain=domain, bc=bc)
-    u = TrialFunction(V)
-    v = TestFunction(V)
-    A = inner(u.diff(2), v) + inner(u, v)
-    b = inner(f-(V.B.x.diff(x, 2)+V.B.x), v)
-    u_tilde = np.linalg.solve(A, b)
-    err = L2_error(u_tilde, ue, V)
-    print(
-        f'test_helmholtz: L2 error = {err:2.4e}, N = {N}, {V.__class__.__name__}')
+    test_project()
+    test_convection_diffusion()
+    test_helmholtz()
+    
     
